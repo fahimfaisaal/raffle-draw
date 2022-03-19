@@ -29,14 +29,35 @@ class DB {
      * @method setUser
      * @description - this method add the specific user to the user object by id
      * @param {User} user
-     * @return {User}
+     * @return {DB}
      */
     setUser(user) {
         if (user instanceof User) {
             this.users[user.id] = user
         }
 
-      return user
+      return this
+    }
+
+    /**
+     * @method draw
+     * @description - this method return a set of winners based on the ticketList length
+     * @param {number} winners 
+     * @returns {Set}
+     */
+    draw(winners) {
+        const winnersSet = new Set()
+        let index;
+
+        while (winners--) {
+            index = Math.trunc(Math.random() * this.ticketList.length)
+
+            winnersSet.has(index)
+                ? winners++
+                : winnersSet.add(index)
+        }
+
+        return winnersSet
     }
 }
 
