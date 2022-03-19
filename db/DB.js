@@ -43,7 +43,7 @@ class DB {
      * @method draw
      * @description - this method return a set of winners based on the ticketList length
      * @param {number} winners 
-     * @returns {Set}
+     * @returns {Array<Ticket>} - list of winners
      */
     draw(winners) {
         const winnersSet = new Set()
@@ -57,7 +57,7 @@ class DB {
                 : winnersSet.add(index)
         }
 
-        return winnersSet
+        return [...winnersSet].map(winnerIndex => this.ticketList[winnerIndex])
     }
 }
 
