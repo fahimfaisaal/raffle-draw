@@ -1,58 +1,42 @@
 const shortid = require('shortid')
-const DB = require('../db/DB')
-const Ticket = require('./Ticket')
-
-console.log("I am from User: ", DB, Ticket)
-
-class User {
-    #proxyHandler = {
-        set: (target, key, currentValue) => {
-            switch (key) {
-                case 'name': this.#updateTickets(target, currentValue)
-                    break
-                case 'id': {
-                    return false
-                }
-                case 'tickets':
-                    return false
-                default:
-                    return true
-            }
-
-            target[key] = currentValue
-            return true
-        } 
-    }
-    
+class User {    
     constructor(name) {
         this.name = name
         this.id = shortid.generate()
-        this.tickets = []
-        
-        const user = new Proxy(Object.seal(this), this.#proxyHandler)
+        this.tickets = new Map()
 
-        DB.setUser(user);
-
-        return user
+        return Object.seal(this)
     }
 
-    #updateTickets(target, currentName) {
-        if (target.name !== currentName) {
-            target.tickets = target.tickets.map(ticket => {
-                ticket.username = currentName
+    get ticketInfo() {
+        const info = {
+            numberOfTickets: {},
+            totalCost: 0
+        }
+
+        for (const ticket of this.tickets.values()) {
+            const { price } = ticket;
+
+            info.numberOfTickets[price] = info.numberOfTickets[price] + 1 || 1
+            info.totalCost += price
+        }
+
+        return Object.freeze(info)
+    }
+
+    set setName(newName) {
+        if (this.name !== newName) {
+            this.name = newName
+
+            this.tickets.map(ticket => {
+                ticket.username = newName
                 ticket.editedAt = new Date().toISOString()
-                return ticket
             })
-        }
-    }
 
-    buyTicket(price, quantity = 1) {
-        while (quantity--) {
-            const ticket = new Ticket(this.name, price)
-            this.tickets.push(ticket)
-
-            DB.setTicket(ticket)
+            return true
         }
+
+        return false
     }
 }
 

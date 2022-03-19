@@ -1,42 +1,44 @@
 const User = require("../models/User")
 const Ticket = require("../models/Ticket")
 
-console.log("I am from DB: ", User, Ticket)
-
 class DB {
     constructor() {
+        this.winners = []
         this.ticketList = []
         this.users = {}
 
         return Object.freeze(this)
     }
 
-    /**
-     * @method setTicket
-     * @description - this method push the specific ticket to the ticketList
-     * @param {Ticket} ticket 
-     * @returns {Ticket}
-     */
-    setTicket(ticket) {
-        if (ticket instanceof Ticket) {
-            this.ticketList.push(ticket)
-        }
+    addUser(name) {
+        const user = new User(name)
+        this.users[user.id] = user
+        
+        return user
+    }
 
-        return ticket
+    deleteTicket(userId, ticketId) {
+        const ticketIndex = this.ticketList.findIndex(ticket => ticket.id === ticketId)
+        this.ticketList.splice(ticketIndex, 1)
+
+        this.users[userId].tickets.delete(ticketId)
     }
 
     /**
-     * @method setUser
-     * @description - this method add the specific user to the user object by id
-     * @param {User} user
-     * @return {DB}
+     * @param {User} user 
+     * @param {number} price 
+     * @param {number} quantity 
+     * @returns {Array<Ticket>}
      */
-    setUser(user) {
-        if (user instanceof User) {
-            this.users[user.id] = user
-        }
+    buyTicket(userId, price, quantity = 1) {
+        const user = this.users[userId]
 
-      return this
+        while (quantity--) {
+            const ticket = new Ticket(user.name, price)
+
+            this.ticketList.push(ticket)
+            user.tickets.set(ticket.id, ticket)
+        }
     }
 
     /**
@@ -46,18 +48,22 @@ class DB {
      * @returns {Array<Ticket>} - list of winners
      */
     draw(winners) {
-        const winnersSet = new Set()
-        let index;
+        const indexSet = new Set()
+        let winnerIndex;
 
         while (winners--) {
-            index = Math.trunc(Math.random() * this.ticketList.length)
+            winnerIndex = Math.trunc(Math.random() * this.ticketList.length)
 
-            winnersSet.has(index)
-                ? winners++
-                : winnersSet.add(index)
+            if (indexSet.has(winnerIndex)) {
+                winners++
+                continue
+            }
+
+            indexSet.add(winnerIndex)
+            this.winners.push(this.ticketList[winnerIndex])
         }
 
-        return [...winnersSet].map(winnerIndex => this.ticketList[winnerIndex])
+        return this.winners
     }
 }
 
