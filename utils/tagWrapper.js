@@ -1,0 +1,1 @@
+module.exports = (text, tag = 'div') => `<${tag}>${text}</${tag}>`
