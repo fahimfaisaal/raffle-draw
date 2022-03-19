@@ -2,7 +2,7 @@ const shortid = require('shortid')
 const DB = require('../db/DB')
 const Ticket = require('./Ticket')
 
-console.log("I am from User", DB, Ticket)
+console.log("I am from User: ", DB, Ticket)
 
 class User {
     #proxyHandler = {

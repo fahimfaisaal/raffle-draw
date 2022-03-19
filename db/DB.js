@@ -1,7 +1,7 @@
 const User = require("../models/User")
 const Ticket = require("../models/Ticket")
 
-console.log("I am from DB", User, Ticket)
+console.log("I am from DB: ", User, Ticket)
 
 class DB {
     constructor() {
