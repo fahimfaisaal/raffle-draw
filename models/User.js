@@ -1,4 +1,8 @@
-class User {    
+class User {
+    /**
+     * @param {string} name 
+     * @returns {User} - sealed
+     */
     constructor(name) {
         this.name = name
         this.id = Math.random().toString(32).substring(2)

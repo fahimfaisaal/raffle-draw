@@ -2,7 +2,10 @@ const shortid = require('shortid')
 
 class Ticket {
     /**
-     * @param {User} user 
+     * @param {string} name
+     * @param {string} userId
+     * @param {number} price
+     * @returns {Ticket} - sealed
      */
     constructor(name, userId, price) {
         this.username = name;
