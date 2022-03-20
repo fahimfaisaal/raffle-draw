@@ -23,7 +23,7 @@ class DB {
     /**
      * @param {string} userId 
      * @param {string} ticketId 
-     * @returns {Ticket|null} - deleted Ticket if exist or null
+     * @returns {Ticket|null} - deleted Ticket if exist else null
      */
     deleteTicket(userId, ticketId) {
         const user = this.users[userId]
@@ -56,17 +56,17 @@ class DB {
 
     /**
      * @method draw
-     * @description - this method return a set of winners based on the ticketList length
+     * @description - this method return an unique Ticket array of winners based on the ticketList length
      * @param {number} winners - the number of winners
      * @returns {Array<Ticket>} - list of winners ticket
      */
     draw(winners) {
         const ticketList = Object
             .values(this.users)
-            .reduce((list, user) => [...list, ...user.tickets], [])
+            .reduce((list, user) => list.concat(user.tickets), [])
 
         const winnerIdSet = new Set()
-        let winnerIndex = null;
+        let winnerIndex = -1;
 
         while (ticketList.length && winners--) {
             winnerIndex = Math.trunc(Math.random() * ticketList.length)
@@ -83,7 +83,6 @@ class DB {
 
         return this.winners
     }
-
 }
 
 module.exports = new DB(); 
