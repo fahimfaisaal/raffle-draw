@@ -1,12 +1,24 @@
 const User = require("../models/User")
 const Ticket = require("../models/Ticket")
+const { readData, writeData } = require('../utils/readWriteData')
 
 class DB {
+    #winners
+    #users
+    
     constructor() {
-        this.winners = []
-        this.users = {}
+        (async () => {
+            this.#winners = []
+            this.#users = await readData()
+        })()
+    }
 
-        return Object.freeze(this)
+    /**
+     * @param {string} userId 
+     * @returns {User}
+     */
+    getUser(userId) {
+        return this.#users[userId] ?? null
     }
 
     /**
@@ -15,8 +27,9 @@ class DB {
      */
     setUser(name) {
         const user = new User(name)
-        this.users[user.id] = user
+        this.#users[user.id] = user
         
+        writeData(this.#users)
         return user
     }
 
@@ -26,13 +39,14 @@ class DB {
      * @returns {Ticket|null} - deleted Ticket if exist else null
      */
     deleteTicket(userId, ticketId) {
-        const user = this.users[userId]
+        const user = this.#users[userId]
         const ticketIndex = user.tickets.findIndex((ticket) => ticket.id === ticketId)
 
         if (~ticketIndex) {
             return user.tickets.splice(ticketIndex, 1)[0]
         }
 
+        writeData(this.#users)
         return null
     }
 
@@ -43,7 +57,7 @@ class DB {
      * @returns {Array<Ticket>}
      */
     buyTicket(userId, price, quantity = 1) {
-        const user = this.users[userId]
+        const user = this.#users[userId]
 
         while (quantity--) {
             const ticket = new Ticket(user.name, userId, price)
@@ -51,24 +65,25 @@ class DB {
             user.tickets.push(ticket)
         }
 
+        writeData(this.#users)
         return user.tickets
     }
 
     /**
      * @method draw
      * @description - this method return an unique Ticket array of winners based on the ticketList length
-     * @param {number} winners - the number of winners
+     * @param {number} numberOfWinners - the number of winners
      * @returns {Array<Ticket>} - list of winners ticket
      */
-    draw(winners) {
+    draw(numberOfWinners) {
         const ticketList = Object
-            .values(this.users)
+            .values(this.#users)
             .reduce((list, user) => list.concat(user.tickets), [])
 
         const winnerIdSet = new Set()
         let winnerIndex = -1;
 
-        while (ticketList.length && winners--) {
+        while (ticketList.length && numberOfWinners--) {
             winnerIndex = Math.trunc(Math.random() * ticketList.length)
             const winnersTicket = ticketList[winnerIndex]
 
@@ -81,7 +96,7 @@ class DB {
             this.winners.push(winnersTicket)
         }
 
-        return this.winners
+        return this.#winners
     }
 }
 

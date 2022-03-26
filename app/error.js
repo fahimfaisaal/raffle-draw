@@ -1,8 +1,8 @@
 const tagWrapper = require('../utils/tagWrapper')
+const errorGenerator = require('../utils/errorGenerator')
 
 const notFoundMiddleware = (_req, _res, next) => {
-    const error = new Error('404 Page Not Found')
-    error.status = 404
+    const error = errorGenerator('404 Page Not Found', 404)
 
     next(error)
 }
