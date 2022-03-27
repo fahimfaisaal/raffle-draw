@@ -11,6 +11,8 @@ class DB {
             this.#winners = []
             this.#users = await readData()
         })()
+
+        return Object.seal(this)
     }
 
     /**
@@ -26,6 +28,10 @@ class DB {
      * @returns {User}
      */
     setUser(name) {
+        if (!name) {
+            throw new Error('Invalid username')
+        }
+
         const user = new User(name)
         this.#users[user.id] = user
         

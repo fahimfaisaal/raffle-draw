@@ -9,10 +9,10 @@ const notFoundMiddleware = (_req, _res, next) => {
 
 const errorHandler = (error, _req, res, _next) => {
     if (error.status) {
-        return res.status(error.status).send(tagWrapper(error.message, 'h1'))
+        return res.status(error.status).send({ error: error.message })
     }
 
-    res.status(500).send(tagWrapper(error.message, 'h1'))
+    res.status(500).send({ error: error.message })
 }
 
 module.exports = [

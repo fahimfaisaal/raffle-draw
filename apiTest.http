@@ -1,0 +1,23 @@
+@hostname = http://localhost:3000
+
+GET {{hostname}}/
+###
+
+GET {{hostname}}/health
+###
+
+POST {{hostname}}/register
+Content-Type: application/json
+
+{
+  "name": "atiya"
+}
+###
+GET {{hostname}}/login
+Content-Type: application/json
+
+{
+  "name": "Fahim Faisal",
+  "id": "kc4c2nh1f"
+}
+###

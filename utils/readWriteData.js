@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('fs/promises')
 
 /**
  * @function readData
@@ -6,7 +6,7 @@ const fs = require('fs')
  * @returns {Object} - user object
  */
 const readData = async () => {
-  const data = await fs.readFile('../data/data.json')
+  const data = await fs.readFile(`${__dirname}/../data/data.json`)
   return JSON.parse(data)
 }
 
@@ -18,7 +18,7 @@ const readData = async () => {
  */
 const writeData = (data) => {
   const jsonData = JSON.stringify(data)
-  fs.writeFile('../data/data.json', jsonData)
+  fs.writeFile(`${__dirname}/../data/data.json`, jsonData)
 
   return jsonData
 }
